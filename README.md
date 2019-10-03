@@ -46,12 +46,10 @@ jobs:
       - checkout
       - run:
           name: Setup sandbox
-          command: |
-            /setup_sandbox.sh # Needed because CircleCI does not respect docker entrypoints
+          command: /setup_sandbox.sh # Needed because CircleCI does not respect docker entrypoints
       - run:
           name: Build App
-          command: |
-            enonic project build
+          command: enonic project build
       - run:
           name: Deploy App
           command: enonic app install --file build/libs/*.jar
