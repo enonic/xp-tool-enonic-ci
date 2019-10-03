@@ -1,7 +1,7 @@
 <img align="right" src="https://raw.githubusercontent.com/enonic/xp/master/misc/logo.png">
 <h1>Enonic CI/CD</h1>
 
-This repository is for building images that can be used in CI/CD pipelines to both build your XP apps and deploy them to a running instance.
+This repository is for building images that can be used in CI/CD pipelines to **build**, **test** and **deploy** your XP apps to a running XP instance.
 
 - [Images available](#images-available)
 - [CI/CD providers](#cicd-providers)
