@@ -4,12 +4,13 @@
 This repository is for building images that can be used in CI/CD pipelines to both build your XP apps and deploy them to a running instance.
 
 - [Images available](#images-available)
-- [Tested CI/CD services](#tested-cicd-services)
+- [CI/CD providers](#cicd-providers)
   - [Required environmental variables](#required-environmental-variables)
   - [CircleCI](#circleci)
   - [Github Actions](#github-actions)
   - [Drone](#drone)
   - [Travis CI](#travis-ci)
+  - [Jenkins](#jenkins)
 - [Building images](#building-images)
 
 ## Images available
@@ -19,9 +20,7 @@ These images contain the Enonic CLI, JDK and other build essentials to build you
 * `enonic/enonic-ci:7.0.1`
 * `enonic/enonic-ci:7.1.0`
 
-## Tested CI/CD services
-
-These CI/CD providers have been tested and work.
+## CI/CD providers
 
 ### Required environmental variables
 
@@ -135,6 +134,41 @@ after_success:
       -u $ENONIC_CLI_REMOTE_USER:$ENONIC_CLI_REMOTE_PASS \
       -F "file=@$(find build/libs/ -name '*.jar')" \
       $ENONIC_CLI_REMOTE_URL/app/install | xargs echo
+```
+
+### Jenkins
+
+> **_NOTE:_** This has not been tested!
+
+Remember to create required [credentials for project in Jenkins](https://jenkins.io/doc/book/pipeline/jenkinsfile/#handling-credentials).
+
+Create a file `Jenkinsfile` in your repo:
+
+```
+pipeline {
+  agent {
+    docker {
+      image 'enonic/enonic-ci:7.1.0'
+    }
+  }
+  environment {
+    ENONIC_CLI_REMOTE_URL  = credentials('jenkins-enonic-url')
+    ENONIC_CLI_REMOTE_USER = credentials('jenkins-enonic-user')
+    ENONIC_CLI_REMOTE_PASS = credentials('jenkins-enonic-pass')
+  }
+  stages {
+    stage('Build App') {
+      steps {
+        sh 'enonic project build'
+      }
+    }
+    stage('Deploy App') {
+      steps {
+        sh 'enonic app install --file build/libs/*.jar'
+      }
+    }
+  }
+}
 ```
 
 ## Building images
