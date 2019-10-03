@@ -128,11 +128,13 @@ jdk:
   - openjdk11
 
 after_success:
+  # We pipe the curl command to xargs echo to be able
+  # to view the output in the Travis dashboard
   - |
-    curl -X POST \
+    curl -X POST -f -s -S -o - \
       -u $ENONIC_CLI_REMOTE_USER:$ENONIC_CLI_REMOTE_PASS \
       -F "file=@$(find build/libs/ -name '*.jar')" \
-      $ENONIC_CLI_REMOTE_URL/app/install
+      $ENONIC_CLI_REMOTE_URL/app/install | xargs echo
 ```
 
 ## Building images
