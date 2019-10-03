@@ -20,7 +20,7 @@ RUN enonic sandbox create ${ENONIC_SANDBOX_NAME} --version=${ENONIC_DISTRO_VERSI
 
 RUN ln -s /.enonic /root/.enonic
 
-# Setup entrypoint
+# Setup scripts and entrypoint
 COPY bin/docker-entrypoint.sh /docker-entrypoint.sh
 COPY bin/setup_sandbox.sh /setup_sandbox.sh
 ENTRYPOINT [ "/docker-entrypoint.sh" ]

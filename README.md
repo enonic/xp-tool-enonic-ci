@@ -1,7 +1,7 @@
 <img align="right" src="https://raw.githubusercontent.com/enonic/xp/master/misc/logo.png">
-<h1>Enonic CI/CD images</h1>
+<h1>Enonic CI/CD</h1>
 
-This repository is for building images that can be used in CI/CD pipelines.
+This repository is for building images that can be used in CI/CD pipelines to both build your XP apps and deploy them to a running instance.
 
 - [Images available](#images-available)
 - [Tested CI/CD services](#tested-cicd-services)
@@ -14,7 +14,7 @@ This repository is for building images that can be used in CI/CD pipelines.
 
 ## Images available
 
-These images contain the Enonic CLI, Java and some build essentials to build your projects:
+These images contain the Enonic CLI, JDK and other build essentials to build your projects:
 
 * `enonic/enonic-ci:7.0.1`
 * `enonic/enonic-ci:7.1.0`
