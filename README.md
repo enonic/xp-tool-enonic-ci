@@ -1,18 +1,38 @@
-# Enonic CI/CD images
+<img align="right" src="https://raw.githubusercontent.com/enonic/xp/master/misc/logo.png">
+<h1>Enonic CI/CD images</h1>
 
 This repository is for building images that can be used in CI/CD pipelines.
 
+- [Images available](#images-available)
+- [Tested CI/CD services](#tested-cicd-services)
+  - [Required environmental variables](#required-environmental-variables)
+  - [CircleCI](#circleci)
+  - [Github Actions](#github-actions)
+  - [Drone](#drone)
+  - [Travis CI](#travis-ci)
+- [Building images](#building-images)
+
 ## Images available
+
+These images contain the Enonic CLI, Java and some build essentials to build your projects:
 
 * `enonic/enonic-ci:7.0.1`
 * `enonic/enonic-ci:7.1.0`
 
-## CircleCI example
+## Tested CI/CD services
 
-For this to work you must create [environmental variables for project in CircleCI](https://circleci.com/docs/2.0/env-vars/#setting-an-environment-variable-in-a-project):
-* `ENONIC_CLI_REMOTE_URL=<YOUR_XP_SERVER>`: Note the default management port is 4848
+These CI/CD providers have been tested and work.
+
+### Required environmental variables
+
+In order to deploy your app in a pipeline you have to set 3 environmental variables for your build:
+* `ENONIC_CLI_REMOTE_URL=<YOUR_XP_SERVER>`: Note the default management port is 4848, i.e. https://myserver.com:4848
 * `ENONIC_CLI_REMOTE_USER=<YOUR_USER>`
 * `ENONIC_CLI_REMOTE_PASS=<YOUR_PASS>`
+
+### CircleCI
+
+Remember to create required [environmental variables for project in CircleCI](https://circleci.com/docs/2.0/env-vars/#setting-an-environment-variable-in-a-project).
 
 Create a file `.circleci/config.yml` in your repo:
 
@@ -38,12 +58,9 @@ jobs:
           command: enonic app install --file build/libs/*.jar
 ```
 
-## Github Actions example
+### Github Actions
 
-For this to work you must create [secrets for your Github actions](https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables):
-* `ENONIC_CLI_REMOTE_URL=<YOUR_XP_SERVER>`: Note the default management port is 4848
-* `ENONIC_CLI_REMOTE_USER=<YOUR_USER>`
-* `ENONIC_CLI_REMOTE_PASS=<YOUR_PASS>`
+Remember to create required [environmental variables for project on Github](https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables).
 
 Create a file `.github/workflows/enonic.yml` in your repo:
 
@@ -57,28 +74,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: Build App
-        uses: docker://enonic/enonic-ci:7.1.0
-        with:
-          args: enonic project build
-      - name: Deploy App
+      - name: Build and Deploy app
         uses: docker://enonic/enonic-ci:7.1.0
         env:
           ENONIC_CLI_REMOTE_URL: ${{ secrets.ENONIC_CLI_REMOTE_URL }}
           ENONIC_CLI_REMOTE_USER: ${{ secrets.ENONIC_CLI_REMOTE_USER }}
           ENONIC_CLI_REMOTE_PASS: ${{ secrets.ENONIC_CLI_REMOTE_PASS }}
         with:
-          args: bash -c "enonic app install --file build/libs/*.jar"
+          args: bash -c "enonic project build && enonic app install --file build/libs/*.jar"
 ```
 
-## Drone example
+### Drone
 
-Note: This has not been tested.
-
-For this to work you must create [secrets for your Drone project](https://docs.drone.io/configure/secrets/):
-* `ENONIC_CLI_REMOTE_URL=<YOUR_XP_SERVER>`: Note the default management port is 4848
-* `ENONIC_CLI_REMOTE_USER=<YOUR_USER>`
-* `ENONIC_CLI_REMOTE_PASS=<YOUR_PASS>`
+Remember to create required [environmental variables for project in Drone](https://docs.drone.io/configure/secrets/).
 
 Create a file `.drone.yml` in your repo:
 
@@ -100,7 +108,31 @@ steps:
       ENONIC_CLI_REMOTE_USER:
         from_secret: ENONIC_CLI_REMOTE_USER
       ENONIC_CLI_REMOTE_PASS:
-        from_secret: ENONIC_CLI_REMOTE_USER
+        from_secret: ENONIC_CLI_REMOTE_PASS
     commands:
-      - bash -c "enonic app install --file build/libs/*.jar"
+      - enonic app install --file build/libs/*.jar
 ```
+
+### Travis CI
+
+Remember to create required [environmental variables for project in TravisCI](https://docs.travis-ci.com/user/environment-variables/#defining-variables-in-repository-settings).
+
+Travis does not allow you to run custom images, so we will use their prebuilt images instead and deploy your app with curl.
+
+```yaml
+language: java
+
+jdk:
+  - openjdk11
+
+after_success:
+  - |
+    curl -X POST \
+      -u $ENONIC_CLI_REMOTE_USER:$ENONIC_CLI_REMOTE_PASS \
+      -F "file=@$(find build/libs/ -name '*.jar')" \
+      $ENONIC_CLI_REMOTE_URL/app/install
+```
+
+## Building images
+
+Log into DockerHub with `docker login` and then run `./create_and_push_images.sh`.

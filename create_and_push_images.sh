@@ -4,11 +4,13 @@ set -e
 
 declare -A BASE_IMAGES
 
+# Here you can add more base images to build. Key in the map is the base
+# image tag and the value is the postfix added to the final image tag.
 BASE_IMAGES=(
-    ["circleci/buildpack-deps"]=""
+    ["circleci/buildpack-deps:stable"]=""
 #    ["circleci/node"]="-node"
 )
-DOCKER_REPOSITORY="gbbirkisson/enonic-ci"
+DOCKER_REPOSITORY="enonic/enonic-ci"
 XP_DISTRO_VERSIONS="7.0.1 7.1.0"
 ENONIC_CLI_VERSION="1.0.12"
 

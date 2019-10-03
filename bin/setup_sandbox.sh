@@ -2,10 +2,10 @@
 
 echo -n "Setting up ${ENONIC_SANDBOX_NAME} sandbox ... "
 
-# Copy sandbox into home if not present
+# Link sandbox into home if not present
 if [ ! -d $HOME/.enonic ]; then
     if [ "$HOME" != "/"  ]; then
-        cp -r /.enonic $HOME/.enonic
+        ln -s /.enonic $HOME/.enonic
     fi
 fi
 
