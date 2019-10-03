@@ -26,7 +26,7 @@ These CI/CD providers have been tested and work.
 ### Required environmental variables
 
 In order to deploy your app in a pipeline you have to set 3 environmental variables for your build:
-* `ENONIC_CLI_REMOTE_URL=<YOUR_XP_SERVER>`: Note the default management port is 4848, i.e. https://myserver.com:4848
+* `ENONIC_CLI_REMOTE_URL=<YOUR_XP_SERVER>`: The default management port is 4848, i.e. `https://myserver.com:4848`
 * `ENONIC_CLI_REMOTE_USER=<YOUR_USER>`
 * `ENONIC_CLI_REMOTE_PASS=<YOUR_PASS>`
 
@@ -118,6 +118,8 @@ steps:
 Remember to create required [environmental variables for project in TravisCI](https://docs.travis-ci.com/user/environment-variables/#defining-variables-in-repository-settings).
 
 Travis does not allow you to run custom images, so we will use their prebuilt images instead and deploy your app with curl.
+
+Create a file `.travis.yml` in your repo:
 
 ```yaml
 language: java
