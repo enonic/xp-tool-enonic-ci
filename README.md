@@ -17,17 +17,18 @@ This repository is for building images that can be used in CI/CD pipelines to **
 
 These images contain the Enonic CLI, JDK and other build essentials to build your projects:
 
-* `enonic/enonic-ci:7.0.1`
-* `enonic/enonic-ci:7.1.0`
+- `enonic/enonic-ci:7.0.3`
+- `enonic/enonic-ci:7.1.1`
 
 ## CI/CD providers
 
 ### Required environmental variables
 
 In order to deploy your app in a pipeline you have to set 3 environmental variables for your build:
-* `ENONIC_CLI_REMOTE_URL=<YOUR_XP_SERVER>`: The default management port is 4848, i.e. `https://myserver.com:4848`
-* `ENONIC_CLI_REMOTE_USER=<YOUR_USER>`
-* `ENONIC_CLI_REMOTE_PASS=<YOUR_PASS>`
+
+- `ENONIC_CLI_REMOTE_URL=<YOUR_XP_SERVER>`: The default management port is 4848, i.e. `https://myserver.com:4848`
+- `ENONIC_CLI_REMOTE_USER=<YOUR_USER>`
+- `ENONIC_CLI_REMOTE_PASS=<YOUR_PASS>`
 
 ### CircleCI
 
@@ -41,7 +42,7 @@ jobs:
   build:
     working_directory: ~/app
     docker:
-      - image: enonic/enonic-ci:7.1.0
+      - image: enonic/enonic-ci:7.1.1
     steps:
       - checkout
       - run:
@@ -72,7 +73,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Build and Deploy app
-        uses: docker://enonic/enonic-ci:7.1.0
+        uses: docker://enonic/enonic-ci:7.1.1
         env:
           ENONIC_CLI_REMOTE_URL: ${{ secrets.ENONIC_CLI_REMOTE_URL }}
           ENONIC_CLI_REMOTE_USER: ${{ secrets.ENONIC_CLI_REMOTE_USER }}
@@ -94,11 +95,11 @@ name: default
 
 steps:
   - name: Build App
-    image: enonic/enonic-ci:7.1.0
+    image: enonic/enonic-ci:7.1.1
     commands:
       - enonic project build
   - name: Deploy App
-    image: enonic/enonic-ci:7.1.0
+    image: enonic/enonic-ci:7.1.1
     environment:
       ENONIC_CLI_REMOTE_URL:
         from_secret: ENONIC_CLI_REMOTE_URL
@@ -146,7 +147,7 @@ Create a file `Jenkinsfile` in your repo:
 pipeline {
   agent {
     docker {
-      image 'enonic/enonic-ci:7.1.0'
+      image 'enonic/enonic-ci:7.1.1'
     }
   }
   environment {
