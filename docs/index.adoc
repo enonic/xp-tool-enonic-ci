@@ -1,0 +1,332 @@
+= Setting up CI/CD pipelines for XP apps
+
+This guide describes how you create a CI/CD pipeline that builds, tests and deploys your XP apps with your favorite CI/CD service.
+
+[#env-var]
+== Environmental variables
+
+NOTE: These variables are only needed if you plan to deploy your XP app in your pipeline.
+
+* `ENONIC_CLI_REMOTE_URL` is the address of the management port of the server you want to deploy to, i.e `https://myserver.com:4848`.
+* `ENONIC_CLI_REMOTE_USER` is the user used to deploy.
+* `ENONIC_CLI_REMOTE_PASS` is the password of the respective user.
+
+You can define multiple servers and based on some conditions pick the right server to deploy to. For now we will keep it simple, but if you want to see how that is done see section: <<complete-ci>>.
+
+== CI/CD providers
+
+Depending on your CI/CD provider the pipeline configuration may vary. In this section we will show how to do minimal configuration so that every time you commit to your repository your app will be built, tested and deployed.
+
+[#circle-ci]
+=== CircleCI
+
+. *Setup CircleCI* https://circleci.com/docs/2.0/getting-started/[for your project].
+. *Set required environmental* variables for your project https://circleci.com/docs/2.0/env-vars/#setting-an-environment-variable-in-a-project[for CircleCI].
+. *Create pipeline file* `.circleci/config.yml` in your repository:
++
+[source, yaml]
+----
+version: 2.0
+jobs:
+  build:
+    working_directory: ~/app
+    docker:
+      - image: enonic/enonic-ci:7.1.1
+    steps:
+      - checkout
+      - run:
+          name: Setup sandbox
+          command: /setup_sandbox.sh # Needed because CircleCI does not respect docker entrypoints
+      - run:
+          name: Build App
+          command: enonic project build
+      - run:
+          name: Deploy App
+          command: enonic app install --file build/libs/*.jar
+----
++
+. *Push file to repository*:
++
+[source, bash]
+----
+git add .circleci/config.yml
+git commit -m "Add CircleCI pipeline"
+git push
+----
+. *Wait* for CircleCI to build, test and deploy your app to your server.
+
+=== Github Actions
+
+. *Setup Github Actions* https://help.github.com/en/articles/getting-started-with-github-actions[for your project].
+. *Set required environmental* variables for your project https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables[for Github Actions].
+. *Create pipeline file* `.github/workflows/enonic.yml` in your repository:
++
+[source, yaml]
+----
+name: Enonic CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build and Deploy app
+        uses: docker://enonic/enonic-ci:7.1.1
+        env:
+          ENONIC_CLI_REMOTE_URL: ${{ secrets.ENONIC_CLI_REMOTE_URL }}
+          ENONIC_CLI_REMOTE_USER: ${{ secrets.ENONIC_CLI_REMOTE_USER }}
+          ENONIC_CLI_REMOTE_PASS: ${{ secrets.ENONIC_CLI_REMOTE_PASS }}
+        with:
+          args: bash -c "enonic project build && enonic app install --file build/libs/*.jar"
+----
++
+. *Push file to repository*:
++
+[source, bash]
+----
+git add .github/workflows/enonic.yml
+git commit -m "Add Github Actions pipeline"
+git push
+----
+. *Wait* for Github Actions to build, test and deploy your app to your server.
+
+=== Drone
+
+. *Setup Drone* https://docs.drone.io/[for your project].
+. *Set required environmental* variables for your project https://docs.drone.io/configure/secrets/[for Drone].
+. *Create pipeline file* `.drone.yml` in your repository:
++
+[source, yaml]
+----
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: Build App
+    image: enonic/enonic-ci:7.1.1
+    commands:
+      - enonic project build
+  - name: Deploy App
+    image: enonic/enonic-ci:7.1.1
+    environment:
+      ENONIC_CLI_REMOTE_URL:
+        from_secret: ENONIC_CLI_REMOTE_URL
+      ENONIC_CLI_REMOTE_USER:
+        from_secret: ENONIC_CLI_REMOTE_USER
+      ENONIC_CLI_REMOTE_PASS:
+        from_secret: ENONIC_CLI_REMOTE_PASS
+    commands:
+      - enonic app install --file build/libs/*.jar
+----
++
+. *Push file to repository*:
++
+[source, bash]
+----
+git add .drone.yml
+git commit -m "Add Drone pipeline"
+git push
+----
+. *Wait* for Drone to build, test and deploy your app to your server.
+
+=== Travis CI
+
+. *Setup Travis CI* https://docs.travis-ci.com/user/tutorial/[for your project].
+. *Set required environmental* variables for your project https://docs.travis-ci.com/user/environment-variables/#defining-variables-in-repository-settings[for Travis CI].
+. *Create pipeline file* `.travis.yml` in your repository:
++
+NOTE: Travis does not allow you to run custom images, so we will use their prebuilt images instead and deploy your app with curl.
++
+[source, yaml]
+----
+language: java
+
+jdk:
+  - openjdk11
+
+after_success:
+  # We pipe the curl command to xargs echo to be able
+  # to view the output in the Travis dashboard
+  - |
+    curl -X POST -f -s -S -o - \
+      -u $ENONIC_CLI_REMOTE_USER:$ENONIC_CLI_REMOTE_PASS \
+      -F "file=@$(find build/libs/ -name '*.jar')" \
+      $ENONIC_CLI_REMOTE_URL/app/install | xargs echo
+----
++
+. *Push file to repository*:
++
+[source, bash]
+----
+git add .travis.yml
+git commit -m "Add Travis CI pipeline"
+git push
+----
+. *Wait* for Travis CI to build, test and deploy your app to your server.
+
+=== Jenkins
+
+CAUTION: This has not been tested!
+
+. *Setup Jenkins* https://jenkins.io/doc/pipeline/tour/hello-world/[for your project].
+. *Set required environmental* variables for your project https://jenkins.io/doc/book/pipeline/jenkinsfile/#handling-credentials[for Jenkins].
+. *Create pipeline file* `Jenkinsfile` in your repository:
++
+[source, text]
+----
+pipeline {
+  agent {
+    docker {
+      image 'enonic/enonic-ci:7.1.1'
+    }
+  }
+  environment {
+    ENONIC_CLI_REMOTE_URL  = credentials('jenkins-enonic-url')
+    ENONIC_CLI_REMOTE_USER = credentials('jenkins-enonic-user')
+    ENONIC_CLI_REMOTE_PASS = credentials('jenkins-enonic-pass')
+  }
+  stages {
+    stage('Build App') {
+      steps {
+        sh 'enonic project build'
+      }
+    }
+    stage('Deploy App') {
+      steps {
+        sh 'enonic app install --file build/libs/*.jar'
+      }
+    }
+  }
+}
+----
++
+. *Push file to repository*:
++
+[source, bash]
+----
+git add Jenkinsfile
+git commit -m "Add Jenkins pipeline"
+git push
+----
+. *Wait* for Jenkins to build, test and deploy your app to your server.
+
+[#complete-ci]
+== Deploying based on conditions
+
+In this section we are going to take the pipeline a step further. Instead of building, testing and deploying on every commit, we will introduce some conditions:
+
+* Build app on:
+** All commits
+* Deploy to testing server on:
+** All commits in branches called `feature-<SOMETHING>`
+* Deploy to staging server on:
+** All commits in `master` branch
+** All tags
+* Deploy to production server on:
+** All tags with format `vX.Y.Z`, but only after manual approval. Note that tags have to strictly follow this rule so tag `v1.2.3-rc1` will for example not be deployed.
+
+To do this we are going to use CircleCI and their workflow API.
+
+=== Create contexts
+
+Before we create the workflow, we first need to https://circleci.com/docs/2.0/contexts/#creating-and-using-a-context[create 3 contexts in our organization]. We will call them:
+
+* `testing-server`
+* `staging-server`
+* `production-server`
+
+Each of these contexts should have those 3 <<env-var>> to configure deployment to their respective servers.
+
+=== Create workflow
+
+Now we follow the same steps as before for <<circle-ci>>, but now our `.circleci/config.yml` looks a bit different:
+
+[source, yaml]
+----
+version: 2.1
+
+executors:
+  xp-executor:
+    docker:
+      - image: enonic/enonic-ci:7.1.0
+    working_directory: ~/app
+
+jobs:
+  build:
+    executor: xp-executor
+    steps:
+      - checkout
+      - run:
+          name: Setup sandbox
+          command: /setup_sandbox.sh # Needed because CircleCI does not respect docker entrypoints
+      - run:
+          name: Build App
+          command: enonic project build
+      - persist_to_workspace:
+          root: ~/app/build
+          paths:
+            - libs
+  deploy:
+    executor: xp-executor
+    steps:
+      - attach_workspace:
+          at: ~/app/build
+      - run:
+          name: Deploy App
+          command: enonic app install --file build/libs/*.jar
+
+workflows:
+  xp-ci-cd:
+    jobs:
+      - build: # Build and test all commits and tags (but not deploy)
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              only: /.*/
+      - deploy: # Deploy feature-<SOMETHING> branches to test server
+          name: deploy-testing
+          context: testing-server
+          requires:
+            - build
+          filters:
+            branches:
+              only: /^feature-.*/
+      - deploy: # Deploy master branch and all tags to staging server
+          name: deploy-staging
+          context: staging-server
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              only: master
+      - deploy-prod-approval: # Require approval to deploy to production server
+          type: approval
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/
+            branches:
+              ignore: /.*/
+      - deploy: # Deploy tags with format vX.Y.Z to production server
+          name: deploy-production
+          context: production-server
+          requires:
+            - build
+            - deploy-prod-approval
+          filters:
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/
+            branches:
+              ignore: /.*/
+----
+
+Now push this file to your repository and you are done. Now you have a fully functional CI/CD pipeline for your XP app.
+
+NOTE: To approve production deployments you have to open up your CircleCI project workflow page, pick running workflow that is on hold and approve the `deploy-prod-approval` job.
