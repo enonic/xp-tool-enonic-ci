@@ -3,7 +3,7 @@
 set -e
 
 DOCKER_REPOSITORY="enonic/enonic-ci"
-XP_DISTRO_VERSIONS="7.0.3 7.1.1"
+XP_DISTRO_VERSIONS="7.0.3 7.1.1" # Only use 1 of each minor version
 ENONIC_CLI_VERSION="1.0.12"
 
 declare -A BASE_IMAGES
@@ -17,7 +17,7 @@ BASE_IMAGES=(
 
 function build_and_push() {
     # Create tag
-    IMG=$2:$3$4
+    IMG=$2:$(echo $3 | awk -F"." '{print $1"."$2}')$4
 
     # Pull base image and build our image
     docker pull $1
