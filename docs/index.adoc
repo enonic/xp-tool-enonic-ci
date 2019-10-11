@@ -220,6 +220,8 @@ git push
 [#complete-ci]
 == Deploying based on conditions
 
+NOTE: In this section we will be using CircleCI.
+
 In this section we are going to take the pipeline a step further. Instead of building, testing and deploying on every commit, we will introduce some conditions:
 
 * Build app on:
