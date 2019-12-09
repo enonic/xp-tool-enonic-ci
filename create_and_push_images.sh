@@ -14,7 +14,7 @@ XP_DISTRO_VERSIONS=( # Only use 1 of each minor version
 # image tag.
 BASE_IMAGES=(
     'circleci/buildpack-deps:stable::'
-#    'circleci/node::-node'
+    'circleci/node::-node'
 )
 
 function build_and_push() {
