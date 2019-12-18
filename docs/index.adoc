@@ -42,12 +42,13 @@ type: docker
 name: default
 
 steps:
-  - name: Build and Test App
+  - name: build & test app
     image: enonic/enonic-ci:7.1
     commands:
       - /setup_sandbox.sh
       - enonic project build
-  - name: Deploy App
+
+  - name: deploy App
     image: enonic/enonic-ci:7.1
     environment:
       ENONIC_CLI_REMOTE_URL:
@@ -231,9 +232,169 @@ git push
 [#complete-ci]
 == Deploying based on conditions
 
-NOTE: In this section we will be using CircleCI.
+In this section we are going to take the pipeline a step further. Instead of building, testing and deploying on every commit, we will introduce some conditions.
 
-In this section we are going to take the pipeline a step further. Instead of building, testing and deploying on every commit, we will introduce some conditions:
+=== Using Drone
+
+==== Conditions
+
+In this example our conditions will be:
+
+* Deploy to testing server on:
+** All pull requests to `master` branch
+* Deploy to staging server on:
+** All commits in `master` branch
+* Deploy to production server on:
+** All builds that are promoted to `production`
+
+==== Using the Drone CLI
+
+To setup secrets and do promotions it is easiest to use the Drone CLI. So start by https://docs.drone.io/cli/install/[installing the Drone CLI].
+
+Now you have to get your access token for the Drone CLI. You can find it in your user profile on the drone server. If you are using the Drone Cloud service https://cloud.drone.io/account[you can view it here].
+
+To test your access token run the commands:
+
+[source, bash]
+----
+export DRONE_SERVER=https://cloud.drone.io
+export DRONE_TOKEN=<your_access_token>
+drone info
+----
+
+==== Creating secrets
+
+Now create secrets for testing, staging and production servers. To do this run the commands:
+
+[source, bash]
+----
+ORG=<your_github_username_or_organization>
+
+drone orgsecret add $ORG testing-url http://<xp_testing_server>:4848 --allow-pull-request
+drone orgsecret add $ORG testing-user <xp_testing_user> --allow-pull-request
+drone orgsecret add $ORG testing-pass <xp_testing_pass> --allow-pull-request
+
+drone orgsecret add $ORG staging-url http://<xp_staging_server>:4848
+drone orgsecret add $ORG staging-user <xp_staging_user>
+drone orgsecret add $ORG staging-pass <xp_staging_pass>
+
+drone orgsecret add $ORG production-url http://<xp_production_server>:4848
+drone orgsecret add $ORG production-user <xp_production_user>
+drone orgsecret add $ORG production-pass <xp_production_pass>
+----
+
+==== Create pipelines
+
+Now we follow the same steps as before for <<drone>>, but now our `.drone.yml` looks a bit different:
+
+[source, yaml]
+----
+kind: pipeline
+type: docker
+name: "Test Environment"
+
+# Deploy to testing on pull requests to master branch
+trigger:
+  branch:
+    - master
+  event:
+    include:
+      - pull_request
+
+steps:
+  - name: build & test app
+    image: enonic/enonic-ci:7.1
+    commands:
+      - /setup_sandbox.sh
+      - enonic project build
+
+  - name: deploy
+    image: enonic/enonic-ci:7.1
+    environment:
+      ENONIC_CLI_REMOTE_URL:
+        from_secret: testing-url
+      ENONIC_CLI_REMOTE_USER:
+        from_secret: testing-user
+      ENONIC_CLI_REMOTE_PASS:
+        from_secret: testing-pass
+    commands:
+      - enonic app install --file build/libs/*.jar
+
+---
+kind: pipeline
+type: docker
+name: "Staging Environment"
+
+# Deploy to staging push to master branch
+trigger:
+  branch:
+    - master
+  event:
+    include:
+      - push
+
+steps:
+  - name: build & test app
+    image: enonic/enonic-ci:7.1
+    commands:
+      - /setup_sandbox.sh
+      - enonic project build
+
+  - name: deploy
+    image: enonic/enonic-ci:7.1
+    environment:
+      ENONIC_CLI_REMOTE_URL:
+        from_secret: staging-url
+      ENONIC_CLI_REMOTE_USER:
+        from_secret: staging-user
+      ENONIC_CLI_REMOTE_PASS:
+        from_secret: staging-pass
+    commands:
+      - enonic app install --file build/libs/*.jar
+
+---
+kind: pipeline
+type: docker
+name: "Production Environment"
+
+# Deploy to production on promoted builds
+trigger:
+  target:
+    - production
+
+steps:
+  - name: build & test app
+    image: enonic/enonic-ci:7.1
+    commands:
+      - /setup_sandbox.sh
+      - enonic project build
+
+  - name: deploy
+    image: enonic/enonic-ci:7.1
+    environment:
+      ENONIC_CLI_REMOTE_URL:
+        from_secret: production-url
+      ENONIC_CLI_REMOTE_USER:
+        from_secret: production-user
+      ENONIC_CLI_REMOTE_PASS:
+        from_secret: production-pass
+    commands:
+      - enonic app install --file build/libs/*.jar
+----
+
+==== Promoting builds to production
+
+Once you are happy with a build that is running on the staging server, you can promote it to production. That is done by running the command:
+
+----
+drone build promote <your_github_username_or_organization/github_repo> <build_number> production
+----
+
+=== Using CircleCi
+
+==== Conditions
+
+In this example our conditions will be:
 
 * Build app on:
 ** All commits
@@ -247,7 +408,7 @@ In this section we are going to take the pipeline a step further. Instead of bui
 
 To do this we are going to use CircleCI and their workflow API.
 
-=== Create contexts
+==== Create contexts
 
 Before we create the workflow, we first need to https://circleci.com/docs/2.0/contexts/#creating-and-using-a-context[create 3 contexts in our organization]. We will call them:
 
@@ -257,7 +418,7 @@ Before we create the workflow, we first need to https://circleci.com/docs/2.0/co
 
 Each of these contexts should have those 3 <<env-var>> to configure deployment to their respective servers.
 
-=== Create workflow
+==== Create workflow
 
 Now we follow the same steps as before for <<circle-ci>>, but now our `.circleci/config.yml` looks a bit different:
 
