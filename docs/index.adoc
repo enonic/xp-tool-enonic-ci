@@ -24,12 +24,12 @@ NOTE: These variables are only needed if you plan to deploy your XP app in your 
 
 You can define multiple servers and based on some conditions pick the right server to deploy to. For now we will keep it simple, but if you want to see how that is done see section: <<complete-ci>>.
 
-= CI/CD providers
+== CI/CD providers
 
 Depending on your CI/CD provider the pipeline configuration may vary. In this section we will show how to do minimal configuration so that every time you commit to your repository your app will be built, tested and deployed.
 
 [#drone]
-== Drone
+=== Drone
 
 . *Setup Drone* https://docs.drone.io/[for your project].
 . *Set required environmental* variables for your project https://docs.drone.io/configure/secrets/[for Drone].
@@ -72,7 +72,7 @@ git push
 . *Wait* for Drone to build, test and deploy your app to your server.
 
 [#circle-ci]
-== CircleCI
+=== CircleCI
 
 . *Setup CircleCI* https://circleci.com/docs/2.0/getting-started/[for your project].
 . *Set required environmental variables* for your project https://circleci.com/docs/2.0/env-vars/#setting-an-environment-variable-in-a-project[for CircleCI].
@@ -109,7 +109,7 @@ git push
 ----
 . *Wait* for CircleCI to build, test and deploy your app to your server.
 
-== Github Actions
+=== Github Actions
 
 . *Setup Github Actions* https://help.github.com/en/articles/getting-started-with-github-actions[for your project].
 . *Set required environmental variables* for your project https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables[for Github Actions].
@@ -146,7 +146,7 @@ git push
 ----
 . *Wait* for Github Actions to build, test and deploy your app to your server.
 
-== Travis CI
+=== Travis CI
 
 . *Setup Travis CI* https://docs.travis-ci.com/user/tutorial/[for your project].
 . *Set required environmental variables* for your project https://docs.travis-ci.com/user/environment-variables/#defining-variables-in-repository-settings[for Travis CI].
@@ -183,7 +183,7 @@ git push
 ----
 . *Wait* for Travis CI to build, test and deploy your app to your server.
 
-== Jenkins
+=== Jenkins
 
 CAUTION: This has not been tested!
 
@@ -230,13 +230,13 @@ git push
 . *Wait* for Jenkins to build, test and deploy your app to your server.
 
 [#complete-ci]
-= Deploying with conditions
+== Deploying with conditions
 
 In this section we are going to take the pipeline a step further. Instead of building, testing and deploying on every commit, we will introduce some conditions.
 
-== Drone
+=== Drone
 
-=== Conditions
+==== Conditions
 
 In this example our conditions will be:
 
@@ -247,7 +247,7 @@ In this example our conditions will be:
 * Deploy to production server on:
 ** All builds that are promoted to `production`
 
-=== Drone CLI
+==== Drone CLI
 
 To setup secrets and do promotions it is easiest to use the Drone CLI. So start by https://docs.drone.io/cli/install/[installing the Drone CLI].
 
@@ -262,7 +262,7 @@ export DRONE_TOKEN=<your_access_token>
 drone info
 ----
 
-=== Creating secrets
+==== Creating secrets
 
 Now create secrets for testing, staging and production servers. To do this run the commands:
 
@@ -283,7 +283,7 @@ drone orgsecret add $ORG production-user <xp_production_user>
 drone orgsecret add $ORG production-pass <xp_production_pass>
 ----
 
-=== Create pipelines
+==== Create pipelines
 
 Now we follow the same steps as before for <<drone>>, but now our `.drone.yml` looks a bit different:
 
@@ -382,7 +382,7 @@ steps:
       - enonic app install --file build/libs/*.jar
 ----
 
-=== Promoting builds to production
+==== Promoting builds to production
 
 Once you are happy with a build that is running on the staging server, you can promote it to production. That is done by running the command:
 
@@ -390,9 +390,9 @@ Once you are happy with a build that is running on the staging server, you can p
 drone build promote <your_github_username_or_organization/github_repo> <build_number> production
 ----
 
-== Using CircleCi
+=== Using CircleCi
 
-=== Conditions
+==== Conditions
 
 In this example our conditions will be:
 
@@ -408,7 +408,7 @@ In this example our conditions will be:
 
 To do this we are going to use CircleCI and their workflow API.
 
-=== Create contexts
+==== Create contexts
 
 Before we create the workflow, we first need to https://circleci.com/docs/2.0/contexts/#creating-and-using-a-context[create 3 contexts in our organization]. We will call them:
 
@@ -418,7 +418,7 @@ Before we create the workflow, we first need to https://circleci.com/docs/2.0/co
 
 Each of these contexts should have those 3 <<env-var>> to configure deployment to their respective servers.
 
-=== Create workflow
+==== Create workflow
 
 Now we follow the same steps as before for <<circle-ci>>, but now our `.circleci/config.yml` looks a bit different:
 
@@ -509,7 +509,7 @@ Now push this file to your repository and you are done. Now you have a fully fun
 
 NOTE: To approve production deployments you have to open up your CircleCI project workflow page, pick running workflow that is on hold and approve the `deploy-prod-approval` job.
 
-= FAQ
+== FAQ
 
 ==== Build prompts a question to select sandbox
 
