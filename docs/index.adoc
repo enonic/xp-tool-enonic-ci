@@ -234,7 +234,7 @@ git push
 
 In this section we are going to take the pipeline a step further. Instead of building, testing and deploying on every commit, we will introduce some conditions.
 
-=== Drone
+=== Using Drone
 
 ==== Conditions
 
