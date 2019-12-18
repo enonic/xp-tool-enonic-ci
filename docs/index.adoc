@@ -28,81 +28,7 @@ You can define multiple servers and based on some conditions pick the right serv
 
 Depending on your CI/CD provider the pipeline configuration may vary. In this section we will show how to do minimal configuration so that every time you commit to your repository your app will be built, tested and deployed.
 
-[#circle-ci]
-=== CircleCI
-
-. *Setup CircleCI* https://circleci.com/docs/2.0/getting-started/[for your project].
-. *Set required environmental* variables for your project https://circleci.com/docs/2.0/env-vars/#setting-an-environment-variable-in-a-project[for CircleCI].
-. *Create pipeline file* `.circleci/config.yml` in your repository:
-+
-[source, yaml]
-----
-version: 2.0
-jobs:
-  build:
-    working_directory: ~/app
-    docker:
-      - image: enonic/enonic-ci:7.1
-    steps:
-      - checkout
-      - run:
-          name: Setup sandbox
-          command: /setup_sandbox.sh # Needed because CircleCI does not respect docker entrypoints
-      - run:
-          name: Build App
-          command: enonic project build
-      - run:
-          name: Deploy App
-          command: enonic app install --file build/libs/*.jar
-----
-+
-. *Push file to repository*:
-+
-[source, bash]
-----
-git add .circleci/config.yml
-git commit -m "Add CircleCI pipeline"
-git push
-----
-. *Wait* for CircleCI to build, test and deploy your app to your server.
-
-=== Github Actions
-
-. *Setup Github Actions* https://help.github.com/en/articles/getting-started-with-github-actions[for your project].
-. *Set required environmental* variables for your project https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables[for Github Actions].
-. *Create pipeline file* `.github/workflows/enonic.yml` in your repository:
-+
-[source, yaml]
-----
-name: Enonic CI
-
-on: [push]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build and Deploy app
-        uses: docker://enonic/enonic-ci:7.1
-        env:
-          ENONIC_CLI_REMOTE_URL: ${{ secrets.ENONIC_CLI_REMOTE_URL }}
-          ENONIC_CLI_REMOTE_USER: ${{ secrets.ENONIC_CLI_REMOTE_USER }}
-          ENONIC_CLI_REMOTE_PASS: ${{ secrets.ENONIC_CLI_REMOTE_PASS }}
-        with:
-          args: bash -c "enonic project build && enonic app install --file build/libs/*.jar"
-----
-+
-. *Push file to repository*:
-+
-[source, bash]
-----
-git add .github/workflows/enonic.yml
-git commit -m "Add Github Actions pipeline"
-git push
-----
-. *Wait* for Github Actions to build, test and deploy your app to your server.
-
+[#drone]
 === Drone
 
 . *Setup Drone* https://docs.drone.io/[for your project].
@@ -116,9 +42,10 @@ type: docker
 name: default
 
 steps:
-  - name: Build App
+  - name: Build and Test App
     image: enonic/enonic-ci:7.1
     commands:
+      - /setup_sandbox.sh
       - enonic project build
   - name: Deploy App
     image: enonic/enonic-ci:7.1
@@ -143,10 +70,85 @@ git push
 ----
 . *Wait* for Drone to build, test and deploy your app to your server.
 
+[#circle-ci]
+=== CircleCI
+
+. *Setup CircleCI* https://circleci.com/docs/2.0/getting-started/[for your project].
+. *Set required environmental variables* for your project https://circleci.com/docs/2.0/env-vars/#setting-an-environment-variable-in-a-project[for CircleCI].
+. *Create pipeline file* `.circleci/config.yml` in your repository:
++
+[source, yaml]
+----
+version: 2.0
+jobs:
+  build:
+    working_directory: ~/app
+    docker:
+      - image: enonic/enonic-ci:7.1
+    steps:
+      - checkout
+      - run:
+          name: Setup sandbox
+          command: /setup_sandbox.sh
+      - run:
+          name: Build and Test App
+          command: enonic project build
+      - run:
+          name: Deploy App
+          command: enonic app install --file build/libs/*.jar
+----
++
+. *Push file to repository*:
++
+[source, bash]
+----
+git add .circleci/config.yml
+git commit -m "Add CircleCI pipeline"
+git push
+----
+. *Wait* for CircleCI to build, test and deploy your app to your server.
+
+=== Github Actions
+
+. *Setup Github Actions* https://help.github.com/en/articles/getting-started-with-github-actions[for your project].
+. *Set required environmental variables* for your project https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables[for Github Actions].
+. *Create pipeline file* `.github/workflows/enonic.yml` in your repository:
++
+[source, yaml]
+----
+name: Enonic CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build, Test and Deploy app
+        uses: docker://enonic/enonic-ci:7.1
+        env:
+          ENONIC_CLI_REMOTE_URL: ${{ secrets.ENONIC_CLI_REMOTE_URL }}
+          ENONIC_CLI_REMOTE_USER: ${{ secrets.ENONIC_CLI_REMOTE_USER }}
+          ENONIC_CLI_REMOTE_PASS: ${{ secrets.ENONIC_CLI_REMOTE_PASS }}
+        with:
+          args: bash -c "enonic project build && enonic app install --file build/libs/*.jar"
+----
++
+. *Push file to repository*:
++
+[source, bash]
+----
+git add .github/workflows/enonic.yml
+git commit -m "Add Github Actions pipeline"
+git push
+----
+. *Wait* for Github Actions to build, test and deploy your app to your server.
+
 === Travis CI
 
 . *Setup Travis CI* https://docs.travis-ci.com/user/tutorial/[for your project].
-. *Set required environmental* variables for your project https://docs.travis-ci.com/user/environment-variables/#defining-variables-in-repository-settings[for Travis CI].
+. *Set required environmental variables* for your project https://docs.travis-ci.com/user/environment-variables/#defining-variables-in-repository-settings[for Travis CI].
 . *Create pipeline file* `.travis.yml` in your repository:
 +
 NOTE: Travis does not allow you to run custom images, so we will use their prebuilt images instead and deploy your app with curl.
@@ -157,6 +159,8 @@ language: java
 
 jdk:
   - openjdk11
+
+# No need to specify build/test step, Travis CI does that for us
 
 after_success:
   # We pipe the curl command to xargs echo to be able
@@ -200,7 +204,7 @@ pipeline {
     ENONIC_CLI_REMOTE_PASS = credentials('jenkins-enonic-pass')
   }
   stages {
-    stage('Build App') {
+    stage('Build and Test App') {
       steps {
         sh 'enonic project build'
       }
@@ -274,7 +278,7 @@ jobs:
       - checkout
       - run:
           name: Setup sandbox
-          command: /setup_sandbox.sh # Needed because CircleCI does not respect docker entrypoints
+          command: /setup_sandbox.sh
       - run:
           name: Build App
           command: enonic project build
@@ -343,3 +347,9 @@ workflows:
 Now push this file to your repository and you are done. Now you have a fully functional CI/CD pipeline for your XP app.
 
 NOTE: To approve production deployments you have to open up your CircleCI project workflow page, pick running workflow that is on hold and approve the `deploy-prod-approval` job.
+
+== FAQ
+
+==== Build prompts a question to select sandbox when running `enonic project build`.
+
+This happens when the entrypoint is overwritten the CI image. To fix this issue run the command `/setup_sandbox.sh` before `enonic project build` in your pipeline. This is done in both the example for <<circle-ci>> and <<drone>>.
