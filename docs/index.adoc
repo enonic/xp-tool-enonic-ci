@@ -350,6 +350,6 @@ NOTE: To approve production deployments you have to open up your CircleCI projec
 
 == FAQ
 
-=== Build prompts a question to select sandbox when running `enonic project build`.
+=== Build prompts a question to select sandbox
 
 This happens when the entrypoint is overwritten the CI image. To fix this issue run the command `/setup_sandbox.sh` before `enonic project build` in your pipeline. This is done in both the example for <<drone>> and <<circle-ci>>.
