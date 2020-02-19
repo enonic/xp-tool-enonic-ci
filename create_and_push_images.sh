@@ -3,7 +3,7 @@
 set -ex
 
 DOCKER_REPOSITORY="enonic/enonic-ci"
-ENONIC_CLI_VERSION="1.0.12"
+ENONIC_CLI_VERSION="1.1.1"
 XP_DISTRO_VERSIONS=( # Only use 1 of each minor version
     '7.0.3'
     '7.1.3'
@@ -15,7 +15,7 @@ XP_DISTRO_VERSIONS=( # Only use 1 of each minor version
 # image tag.
 BASE_IMAGES=(
     'circleci/buildpack-deps:stable::'
-    'circleci/node::-node'
+    #'circleci/node::-node'
 )
 
 function build_and_push() {

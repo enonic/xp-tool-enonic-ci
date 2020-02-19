@@ -4,12 +4,14 @@ This guide describes how you create a CI/CD pipeline that builds, tests and depl
 
 == CI/CD images
 
-Enonic builds images specifically made to be used in CI/CD pipelines. Those images can be used with different CI/CD providers to create pipelines. Each image contains the newest minor version of `Enonic XP 7`, the newest version of the `Enonic CLI` and some other essentials for build pipelines. The image name format is `enonic/enonic-ci:<Minor Version><Optional Postfix>`. If you need Yarn or other Node tools, use the `-node` postfix images
+Enonic builds images specifically made to be used in CI/CD pipelines. Those images can be used with different CI/CD providers to create pipelines. Each image contains the newest minor version of `Enonic XP 7`, the newest version of the `Enonic CLI` and some other essentials for build pipelines. The image name format is `enonic/enonic-ci:<Minor Version><Optional Postfix>`. If you need Yarn or other Node tools, use the `-node` postfix images.
 
 * `enonic/enonic-ci:7.0`
 * `enonic/enonic-ci:7.1`
+* `enonic/enonic-ci:7.2`
 * `enonic/enonic-ci:7.0-node`
 * `enonic/enonic-ci:7.1-node`
+* `enonic/enonic-ci:7.2-node`
 
 You can see a full list of https://hub.docker.com/r/enonic/enonic-ci/tags[available images on Docker Hub].
 
@@ -43,13 +45,13 @@ name: default
 
 steps:
   - name: build & test app
-    image: enonic/enonic-ci:7.1
+    image: enonic/enonic-ci:7.2
     commands:
       - /setup_sandbox.sh
       - enonic project build
 
   - name: deploy App
-    image: enonic/enonic-ci:7.1
+    image: enonic/enonic-ci:7.2
     environment:
       ENONIC_CLI_REMOTE_URL:
         from_secret: ENONIC_CLI_REMOTE_URL
@@ -85,7 +87,7 @@ jobs:
   build:
     working_directory: ~/app
     docker:
-      - image: enonic/enonic-ci:7.1
+      - image: enonic/enonic-ci:7.2
     steps:
       - checkout
       - run:
@@ -127,7 +129,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Build, Test and Deploy app
-        uses: docker://enonic/enonic-ci:7.1
+        uses: docker://enonic/enonic-ci:7.2
         env:
           ENONIC_CLI_REMOTE_URL: ${{ secrets.ENONIC_CLI_REMOTE_URL }}
           ENONIC_CLI_REMOTE_USER: ${{ secrets.ENONIC_CLI_REMOTE_USER }}
@@ -183,9 +185,8 @@ git push
 ----
 . *Wait* for Travis CI to build, test and deploy your app to your server.
 
+[#jenkins]
 === Jenkins
-
-CAUTION: This has not been tested!
 
 . *Setup Jenkins* https://jenkins.io/doc/pipeline/tour/hello-world/[for your project].
 . *Set required environmental* variables for your project https://jenkins.io/doc/book/pipeline/jenkinsfile/#handling-credentials[for Jenkins].
@@ -196,7 +197,7 @@ CAUTION: This has not been tested!
 pipeline {
   agent {
     docker {
-      image 'enonic/enonic-ci:7.1'
+      image 'enonic/enonic-ci:7.2'
     }
   }
   environment {
@@ -207,6 +208,7 @@ pipeline {
   stages {
     stage('Build and Test App') {
       steps {
+        sh '/setup_sandbox.sh'
         sh 'enonic project build'
       }
     }
@@ -303,13 +305,13 @@ trigger:
 
 steps:
   - name: build & test app
-    image: enonic/enonic-ci:7.1
+    image: enonic/enonic-ci:7.2
     commands:
       - /setup_sandbox.sh
       - enonic project build
 
   - name: deploy
-    image: enonic/enonic-ci:7.1
+    image: enonic/enonic-ci:7.2
     environment:
       ENONIC_CLI_REMOTE_URL:
         from_secret: testing-url
@@ -335,13 +337,13 @@ trigger:
 
 steps:
   - name: build & test app
-    image: enonic/enonic-ci:7.1
+    image: enonic/enonic-ci:7.2
     commands:
       - /setup_sandbox.sh
       - enonic project build
 
   - name: deploy
-    image: enonic/enonic-ci:7.1
+    image: enonic/enonic-ci:7.2
     environment:
       ENONIC_CLI_REMOTE_URL:
         from_secret: staging-url
@@ -364,13 +366,13 @@ trigger:
 
 steps:
   - name: build & test app
-    image: enonic/enonic-ci:7.1
+    image: enonic/enonic-ci:7.2
     commands:
       - /setup_sandbox.sh
       - enonic project build
 
   - name: deploy
-    image: enonic/enonic-ci:7.1
+    image: enonic/enonic-ci:7.2
     environment:
       ENONIC_CLI_REMOTE_URL:
         from_secret: production-url
@@ -429,7 +431,7 @@ version: 2.1
 executors:
   xp-executor:
     docker:
-      - image: enonic/enonic-ci:7.1
+      - image: enonic/enonic-ci:7.2
     working_directory: ~/app
 
 jobs:
@@ -513,4 +515,4 @@ NOTE: To approve production deployments you have to open up your CircleCI projec
 
 ==== Build prompts a question to select sandbox
 
-This happens when the entrypoint is overwritten the CI image. To fix this issue run the command `/setup_sandbox.sh` before `enonic project build` in your pipeline. This is done in both the example for <<drone>> and <<circle-ci>>.
+This happens when the entrypoint is overwritten the CI image. To fix this issue run the command `/setup_sandbox.sh` before `enonic project build` in your pipeline. This is done in the examples for <<drone>>, <<circle-ci>> and <<jenkins>>.

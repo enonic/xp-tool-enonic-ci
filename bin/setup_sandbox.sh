@@ -1,17 +1,16 @@
 #!/bin/bash
 
-echo -n "Setting up ${ENONIC_SANDBOX_NAME} sandbox ... "
+echo "Setting up ${ENONIC_SANDBOX_NAME} sandbox ... "
 
-# Link sandbox into home if not present
+# Create sandbox if not present
 if [ ! -d $HOME/.enonic ]; then
-    if [ "$HOME" != "/"  ]; then
-        ln -s /.enonic $HOME/.enonic
-    fi
+    echo "Warning, home dir '$HOME/.enonic' not found ... configure your build to use HOME='/home/builder' to speed up future builds"
+    enonic sandbox create ${ENONIC_SANDBOX_NAME} --version=${ENONIC_DISTRO_VERSION}
 fi
 
 # Try to set project sandbox
 if [ "$(enonic project sandbox ${ENONIC_SANDBOX_NAME} 2>&1)" == "Not a valid project folder" ]; then
-    echo "failed! Is working directory an XP app?"
+    echo "Setup failed! Is working directory an XP app?"
 else
-    echo "success!"
+    echo "Setup success!"
 fi
