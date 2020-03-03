@@ -36,7 +36,7 @@ RUN \
     # Setup sandbox
     HOME=$ENONIC_HOME chroot --userspec=$ENONIC_UID / /setup_sandbox.sh && \
     # Allow all users to use builder home dir
-    chmod -R a+rwX $ENONIC_HOME/.enonic
+    chmod -R a+rwX $ENONIC_HOME
 
 ENV HOME=$ENONIC_HOME
 
