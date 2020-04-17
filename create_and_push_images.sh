@@ -7,7 +7,7 @@ ENONIC_CLI_VERSION="1.1.1"
 XP_DISTRO_VERSIONS=( # Only use 1 of each minor version
     '7.0.3'
     '7.1.3'
-    '7.2.2'
+    '7.2.3'
 )
 
 # Here you can add more base images to build. Key in the map is the base
