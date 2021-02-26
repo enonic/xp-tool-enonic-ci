@@ -1,14 +1,15 @@
 ARG BASE_DOCKER_IMAGE
-FROM alpine as dl
+FROM $BASE_DOCKER_IMAGE
+
+# Has to be root to work on Github Actions
+USER root
 
 # Download the CLI
 ARG ENONIC_CLI_VERSION
-RUN wget https://repo.enonic.com/public/com/enonic/cli/enonic/${ENONIC_CLI_VERSION}/enonic_${ENONIC_CLI_VERSION}_Linux_64-bit.tar.gz -qO- | tar xvz
-
-FROM $BASE_DOCKER_IMAGE
-
-# Copy CLI over
-COPY --from=dl --chown=0:0 /enonic /usr/local/bin/enonic
+RUN curl -s https://artifactory.enonic.cloud/artifactory/public/com/enonic/cli/enonic/${ENONIC_CLI_VERSION}/enonic_${ENONIC_CLI_VERSION}_Linux_64-bit.tar.gz | tar xvz -C /tmp && \
+    chown 0:0 /tmp/enonic && \
+    mv /tmp/enonic /usr/local/bin/enonic && \
+    rm -r /tmp/*
 
 # Set environment
 ARG ENONIC_DISTRO_VERSION
@@ -17,9 +18,6 @@ ENV ENONIC_DISTRO_VERSION=${ENONIC_DISTRO_VERSION} \
     ENONIC_UID=1000 \
     ENONIC_UNAME=builder \
     ENONIC_HOME=/home/builder
-
-# Has to be root to work on Github Actions
-USER root
 
 # Setup scripts
 COPY bin/setup_sandbox.sh /setup_sandbox.sh
