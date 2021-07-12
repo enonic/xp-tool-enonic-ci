@@ -6,7 +6,7 @@ USER root
 
 # Download the CLI
 ARG ENONIC_CLI_VERSION
-RUN curl -s https://artifactory.enonic.cloud/artifactory/public/com/enonic/cli/enonic/${ENONIC_CLI_VERSION}/enonic_${ENONIC_CLI_VERSION}_Linux_64-bit.tar.gz | tar xvz -C /tmp && \
+RUN curl -s https://repo.enonic.com/public/com/enonic/cli/enonic/${ENONIC_CLI_VERSION}/enonic_${ENONIC_CLI_VERSION}_Linux_64-bit.tar.gz | tar xvz -C /tmp && \
     chown 0:0 /tmp/enonic && \
     mv /tmp/enonic /usr/local/bin/enonic && \
     rm -r /tmp/*
