@@ -3,7 +3,7 @@
 set -ex
 
 DOCKER_REPOSITORY="enonic/enonic-ci"
-ENONIC_CLI_VERSION="2.0.0"
+ENONIC_CLI_VERSION="2.0.1"
 XP_DISTRO_VERSIONS=( # Only use 1 of each minor version
     '7.5.0'
     '7.6.1'
