@@ -20,9 +20,11 @@ You can see a full list of https://hub.docker.com/r/enonic/enonic-ci/tags[availa
 
 NOTE: These variables are only needed if you plan to deploy your XP app in your pipeline.
 
-* `ENONIC_CLI_REMOTE_URL` is the address of the management port of the server you want to deploy to, i.e `https://myserver.com:4848`.
+* `ENONIC_CLI_REMOTE_URL` is the address of the management port of the server you want to deploy to, i.e `https://myserver.com:4848` or `https://myserver.com:4443`.
 * `ENONIC_CLI_REMOTE_USER` is the user used to deploy.
 * `ENONIC_CLI_REMOTE_PASS` is the password of the respective user.
+* `CLIENT_CERT` is an optional variable used only for mTLS based app deployment with github action
+* `CLIENT_KEY` is an optional variable used only for mTLS based app deployment with github action
 
 You can define multiple servers and based on some conditions pick the right server to deploy to. For now we will keep it simple, but if you want to see how that is done see section: <<complete-ci>>.
 
@@ -121,21 +123,29 @@ git push
 ----
 name: Enonic CI
 
-on: [push]
+name: Server deploy script
+
+on: [<triggering_event>]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: Build, Test and Deploy app
-        uses: docker://enonic/enonic-ci:7.2
-        env:
-          ENONIC_CLI_REMOTE_URL: ${{ secrets.ENONIC_CLI_REMOTE_URL }}
-          ENONIC_CLI_REMOTE_USER: ${{ secrets.ENONIC_CLI_REMOTE_USER }}
-          ENONIC_CLI_REMOTE_PASS: ${{ secrets.ENONIC_CLI_REMOTE_PASS }}
+      - id: build-only
+        uses: enonic/release-tools/build-and-publish@master
         with:
-          args: bash -c "enonic project build && enonic app install --file build/libs/*.jar"
+          skipPublishing: true
+          repoUser: ${{ secrets.ARTIFACTORY_USERNAME }}
+          repoPassword: ${{ secrets.ARTIFACTORY_PASSWORD }}
+      - id: deploy
+        uses: enonic-cloud/app-deploy-action@main
+        with:
+          url: ${{ secrets.ENONIC_CLI_REMOTE_URL }}
+          username: ${{ secrets.ENONIC_CLI_REMOTE_USER }}
+          password: ${{ secrets.ENONIC_CLI_REMOTE_PASS }}
+          client_cert: ${{ secrets.CLIENT_CERT }}
+          client_key: ${{ secrets.CLIENT_KEY }}
+
 ----
 +
 . *Push file to repository*:
