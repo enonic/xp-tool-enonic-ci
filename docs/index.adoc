@@ -25,6 +25,8 @@ NOTE: These variables are only needed if you plan to deploy your XP app in your 
 * `ENONIC_CLI_REMOTE_PASS` is the password of the respective user.
 * `CLIENT_CERT` is an optional variable used only for mTLS based app deployment with github action
 * `CLIENT_KEY` is an optional variable used only for mTLS based app deployment with github action
+* `APP_JAR` is an optional variable in githubaction to set path and name of the jar file to be deployed. When not given, github action looks for a .jar file under build/libs. 
+
 
 You can define multiple servers and based on some conditions pick the right server to deploy to. For now we will keep it simple, but if you want to see how that is done see section: <<complete-ci>>.
 
@@ -145,6 +147,7 @@ jobs:
           password: ${{ secrets.ENONIC_CLI_REMOTE_PASS }}
           client_cert: ${{ secrets.CLIENT_CERT }}
           client_key: ${{ secrets.CLIENT_KEY }}
+          app_jar: "<path and name of the app>"
 
 ----
 +
