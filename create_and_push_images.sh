@@ -5,8 +5,8 @@ set -ex
 DOCKER_REPOSITORY="enonic/enonic-ci"
 ENONIC_CLI_VERSION="2.3.0"
 XP_DISTRO_VERSIONS=( # Only use 1 of each minor version
-    '7.8.4'
-    '7.9.1'
+    '7.8.5'
+    '7.9.2'
 )
 
 # Here you can add more base images to build. Key in the map is the base
