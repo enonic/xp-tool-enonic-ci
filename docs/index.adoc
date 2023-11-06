@@ -6,12 +6,10 @@ This guide describes how you create a CI/CD pipeline that builds, tests and depl
 
 Enonic builds images specifically made to be used in CI/CD pipelines. Those images can be used with different CI/CD providers to create pipelines. Each image contains the newest minor version of `Enonic XP 7`, the newest version of the `Enonic CLI` and some other essentials for build pipelines. The image name format is `enonic/enonic-ci:<Minor Version><Optional Postfix>`. If you need Yarn or other Node tools, use the `-node` postfix images.
 
-* `enonic/enonic-ci:7.0`
-* `enonic/enonic-ci:7.1`
-* `enonic/enonic-ci:7.2`
-* `enonic/enonic-ci:7.0-node`
-* `enonic/enonic-ci:7.1-node`
-* `enonic/enonic-ci:7.2-node`
+* `enonic/enonic-ci:7.12`
+* `enonic/enonic-ci:7.13`
+* `enonic/enonic-ci:7.12-node`
+* `enonic/enonic-ci:7.13-node`
 
 You can see a full list of https://hub.docker.com/r/enonic/enonic-ci/tags[available images on Docker Hub].
 
@@ -49,13 +47,13 @@ name: default
 
 steps:
   - name: build & test app
-    image: enonic/enonic-ci:7.2
+    image: enonic/enonic-ci:7.13
     commands:
       - /setup_sandbox.sh
       - enonic project build
 
   - name: deploy App
-    image: enonic/enonic-ci:7.2
+    image: enonic/enonic-ci:7.13
     environment:
       ENONIC_CLI_REMOTE_URL:
         from_secret: ENONIC_CLI_REMOTE_URL
@@ -91,7 +89,7 @@ jobs:
   build:
     working_directory: ~/app
     docker:
-      - image: enonic/enonic-ci:7.2
+      - image: enonic/enonic-ci:7.13
     steps:
       - checkout
       - run:
@@ -206,7 +204,7 @@ git push
 pipeline {
   agent {
     docker {
-      image 'enonic/enonic-ci:7.2'
+      image 'enonic/enonic-ci:7.13'
     }
   }
   environment {
@@ -314,13 +312,13 @@ trigger:
 
 steps:
   - name: build & test app
-    image: enonic/enonic-ci:7.2
+    image: enonic/enonic-ci:7.13
     commands:
       - /setup_sandbox.sh
       - enonic project build
 
   - name: deploy
-    image: enonic/enonic-ci:7.2
+    image: enonic/enonic-ci:7.13
     environment:
       ENONIC_CLI_REMOTE_URL:
         from_secret: testing-url
@@ -346,13 +344,13 @@ trigger:
 
 steps:
   - name: build & test app
-    image: enonic/enonic-ci:7.2
+    image: enonic/enonic-ci:7.13
     commands:
       - /setup_sandbox.sh
       - enonic project build
 
   - name: deploy
-    image: enonic/enonic-ci:7.2
+    image: enonic/enonic-ci:7.13
     environment:
       ENONIC_CLI_REMOTE_URL:
         from_secret: staging-url
@@ -375,13 +373,13 @@ trigger:
 
 steps:
   - name: build & test app
-    image: enonic/enonic-ci:7.2
+    image: enonic/enonic-ci:7.13
     commands:
       - /setup_sandbox.sh
       - enonic project build
 
   - name: deploy
-    image: enonic/enonic-ci:7.2
+    image: enonic/enonic-ci:7.13
     environment:
       ENONIC_CLI_REMOTE_URL:
         from_secret: production-url
@@ -440,7 +438,7 @@ version: 2.1
 executors:
   xp-executor:
     docker:
-      - image: enonic/enonic-ci:7.2
+      - image: enonic/enonic-ci:7.13
     working_directory: ~/app
 
 jobs:
