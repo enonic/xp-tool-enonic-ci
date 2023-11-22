@@ -12,8 +12,7 @@ XP_DISTRO_VERSIONS=( # Only use 1 of each feature version
 # image tag and the value in the map is the postfix added to the final
 # image tag.
 BASE_IMAGES=(
-    'circleci/buildpack-deps:stable::'
-    'circleci/node::-node'
+    'circleci/node::'
 )
 
 function build_and_push() {
