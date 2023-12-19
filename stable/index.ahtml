@@ -574,13 +574,13 @@ name: default
 
 steps:
   - name: build &amp; test app
-    image: enonic/enonic-ci:7.13
+    image: enonic/enonic-ci:{version}
     commands:
       - /setup_sandbox.sh
       - enonic project build
 
   - name: deploy App
-    image: enonic/enonic-ci:7.13
+    image: enonic/enonic-ci:{version}
     environment:
       ENONIC_CLI_REMOTE_URL:
         from_secret: ENONIC_CLI_REMOTE_URL
@@ -628,7 +628,7 @@ jobs:
   build:
     working_directory: ~/app
     docker:
-      - image: enonic/enonic-ci:7.13
+      - image: enonic/enonic-ci:{version}
     steps:
       - checkout
       - run:
@@ -788,7 +788,7 @@ git push</code></pre>
 <pre class="highlight"><code class="language-text" data-lang="text">pipeline {
   agent {
     docker {
-      image 'enonic/enonic-ci:7.13'
+      image 'enonic/enonic-ci:{version}'
     }
   }
   environment {
@@ -942,13 +942,13 @@ trigger:
 
 steps:
   - name: build &amp; test app
-    image: enonic/enonic-ci:7.13
+    image: enonic/enonic-ci:{version}
     commands:
       - /setup_sandbox.sh
       - enonic project build
 
   - name: deploy
-    image: enonic/enonic-ci:7.13
+    image: enonic/enonic-ci:{version}
     environment:
       ENONIC_CLI_REMOTE_URL:
         from_secret: testing-url
@@ -974,13 +974,13 @@ trigger:
 
 steps:
   - name: build &amp; test app
-    image: enonic/enonic-ci:7.13
+    image: enonic/enonic-ci:{version}
     commands:
       - /setup_sandbox.sh
       - enonic project build
 
   - name: deploy
-    image: enonic/enonic-ci:7.13
+    image: enonic/enonic-ci:{version}
     environment:
       ENONIC_CLI_REMOTE_URL:
         from_secret: staging-url
@@ -1003,13 +1003,13 @@ trigger:
 
 steps:
   - name: build &amp; test app
-    image: enonic/enonic-ci:7.13
+    image: enonic/enonic-ci:{version}
     commands:
       - /setup_sandbox.sh
       - enonic project build
 
   - name: deploy
-    image: enonic/enonic-ci:7.13
+    image: enonic/enonic-ci:{version}
     environment:
       ENONIC_CLI_REMOTE_URL:
         from_secret: production-url
@@ -1126,7 +1126,7 @@ steps:
 executors:
   xp-executor:
     docker:
-      - image: enonic/enonic-ci:7.13
+      - image: enonic/enonic-ci:{version}
     working_directory: ~/app
 
 jobs:
@@ -1235,7 +1235,7 @@ To approve production deployments you have to open up your CircleCI project work
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-12-19 15:56:39 UTC
+Last updated 2023-12-19 16:15:15 UTC
 </div>
 </div>
 </body>
