@@ -477,7 +477,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="cicd_images"><a class="link" href="#cicd_images">CI/CD images</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Enonic builds images specifically made to be used in CI/CD pipelines. Those images can be used with different CI/CD providers to create pipelines. Each image contains the newest minor version of <code>Enonic XP 7</code>, the newest version of the <code>Enonic CLI</code> and some other essentials for build pipelines. The image name format is <code>enonic/enonic-ci:&lt;Minor Version&gt;&lt;Optional Postfix&gt;</code>. If you need Yarn or other Node tools, use the <code>-node</code> postfix images.</p>
+<p>Enonic builds images specifically made to be used in CI/CD pipelines. Those images can be used with different CI/CD providers to create pipelines. Each image contains the newest minor version of <code>Enonic XP 7</code>, the newest version of the <code>Enonic CLI</code> and some other essentials for build pipelines. The image name format is <code>enonic/enonic-ci:&lt;Minor Version&gt;&lt;Optional Postfix&gt;</code>. If you need Yarn or other Node tools, use the <code>-node</code> postfix images for all versions to 7.13.</p>
+</div>
+<div class="paragraph">
+<p>Starting on version 7.14, the <code>-node</code> image has been made the base image while no image is made without these tools.</p>
 </div>
 <div class="ulist">
 <ul>
@@ -492,6 +495,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li>
 <p><code>enonic/enonic-ci:7.13-node</code></p>
+</li>
+<li>
+<p><code>enonic/enonic-ci:7.14</code></p>
 </li>
 </ul>
 </div>
@@ -667,9 +673,7 @@ git push</code></pre>
 <p><strong>Create pipeline file</strong> <code>.github/workflows/enonic.yml</code> in your repository:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-yaml" data-lang="yaml">name: Enonic CI
-
-name: Server deploy script
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">name: Enonic CI Server deploy script
 
 on: [&lt;triggering_event&gt;]
 
@@ -1231,7 +1235,7 @@ To approve production deployments you have to open up your CircleCI project work
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-11-06 13:57:16 UTC
+Last updated 2023-12-19 15:56:39 UTC
 </div>
 </div>
 </body>
