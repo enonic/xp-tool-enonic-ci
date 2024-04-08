@@ -15,9 +15,9 @@ See [here for documentation](./docs/index.adoc).
 
 These images contain the Enonic CLI, JDK and other build essentials to build your projects:
 
-- `enonic/enonic-ci:7.11`
 - `enonic/enonic-ci:7.12`
 - `enonic/enonic-ci:7.13`
+- `enonic/enonic-ci:7.14`
 
 Because builds only use the JDK and the CLI it would be redunant to create images for every single release. Every minor version should do.
 
