@@ -2,7 +2,7 @@
 
 set -ex
 
-DOCKER_REPOSITORY="enonic/enonic-ci-experimental"
+DOCKER_REPOSITORY="enonic/enonic-ci"
 ENONIC_CLI_VERSION="3.0.1"
 XP_DISTRO_VERSIONS=( # Only use 1 of each feature version
     '7.14.3'
@@ -20,7 +20,7 @@ function build_and_push() {
     IMG=$2:$(echo $3 | awk -F"." '{print $1"."$2}')$4
 
     # Build our image
-    docker build \
+    docker buildx build \
     --no-cache \
     --pull \
     --build-arg ENONIC_CLI_VERSION=$ENONIC_CLI_VERSION \
