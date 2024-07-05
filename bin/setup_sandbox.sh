@@ -5,7 +5,7 @@ echo "Setting up ${ENONIC_SANDBOX_NAME} sandbox ... "
 # Create sandbox if not present
 if [ ! -d $HOME/.enonic ]; then
     echo "Warning, home dir '$HOME/.enonic' not found ... configure your build to use HOME='/home/builder' to speed up future builds"
-    enonic sandbox create ${ENONIC_SANDBOX_NAME} --version=${ENONIC_DISTRO_VERSION}
+    enonic sandbox create ${ENONIC_SANDBOX_NAME} --version=${ENONIC_DISTRO_VERSION} --skip-template
 fi
 
 # Try to set project sandbox
