@@ -19,4 +19,4 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Docker build and push
-        run: create_and_push_images.sh
+        run: ./create_and_push_images.sh
