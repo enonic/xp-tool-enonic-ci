@@ -2,7 +2,7 @@
 
 set -ex
 
-DOCKER_REPOSITORY="enonic/enonic-ci"
+DOCKER_REPOSITORY="enonic/enonic-ci-experimental"
 ENONIC_CLI_VERSION="3.0.1"
 XP_DISTRO_VERSIONS=( # Only use 1 of each feature version
     '7.14.3'
@@ -27,6 +27,7 @@ function build_and_push() {
     --build-arg ENONIC_DISTRO_VERSION=$3 \
     --build-arg BASE_DOCKER_IMAGE=$1 \
     -t $IMG \
+    --platform linux/amd64,linux/arm64 \
     .
 
     # Push the image
