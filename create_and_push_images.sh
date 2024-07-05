@@ -20,14 +20,13 @@ function build_and_push() {
     IMG=$2:$(echo $3 | awk -F"." '{print $1"."$2}')$4
 
     # Build our image
-    docker buildx build \
+    docker build \
     --no-cache \
     --pull \
     --build-arg ENONIC_CLI_VERSION=$ENONIC_CLI_VERSION \
     --build-arg ENONIC_DISTRO_VERSION=$3 \
     --build-arg BASE_DOCKER_IMAGE=$1 \
     -t $IMG \
-    --platform linux/amd64,linux/arm64 \
     .
 
     # Push the image
