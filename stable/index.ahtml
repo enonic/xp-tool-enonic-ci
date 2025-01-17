@@ -533,15 +533,6 @@ These variables are only needed if you plan to deploy your XP app in your pipeli
 <li>
 <p><code>ENONIC_CLI_REMOTE_PASS</code> is the password of the respective user.</p>
 </li>
-<li>
-<p><code>CLIENT_CERT</code> is an optional variable used only for mTLS based app deployment with github action</p>
-</li>
-<li>
-<p><code>CLIENT_KEY</code> is an optional variable used only for mTLS based app deployment with github action</p>
-</li>
-<li>
-<p><code>APP_JAR</code> is an optional variable in githubaction to set path and name of the jar file to be deployed. When not given, github action looks for a .jar file under build/libs.</p>
-</li>
 </ul>
 </div>
 <div class="paragraph">
@@ -1236,7 +1227,7 @@ To approve production deployments you have to open up your CircleCI project work
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-08-28 14:37:27 UTC
+Last updated 2025-01-17 09:32:12 UTC
 </div>
 </div>
 </body>
