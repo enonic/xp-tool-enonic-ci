@@ -156,7 +156,7 @@ git push
 
 === Travis CI
 
-. *Setup Travis CI* https://docs.travis-ci.com/user/tutorial/[for your project].
+. *Setup Travis CI* https://www.travis-ci.com/quickstart/[for your project].
 . *Set required environmental variables* for your project https://docs.travis-ci.com/user/environment-variables/#defining-variables-in-repository-settings[for Travis CI].
 . *Create pipeline file* `.travis.yml` in your repository:
 +
