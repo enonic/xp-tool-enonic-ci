@@ -483,20 +483,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="ulist">
 <ul>
 <li>
-<p><code>enonic/enonic-ci:7.14</code></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Prior to 7.14, we made two versions of the image, one with and one without the Node tools:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>enonic/enonic-ci:7.13-node</code></p>
-</li>
-<li>
-<p><code>enonic/enonic-ci:7.13</code></p>
+<p><code>enonic/enonic-ci:7.15</code></p>
 </li>
 </ul>
 </div>
@@ -1225,7 +1212,7 @@ To approve production deployments you have to open up your CircleCI project work
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-21 16:04:32 UTC
+Last updated 2025-03-04 14:58:22 UTC
 </div>
 </div>
 </body>
