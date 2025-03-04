@@ -7,12 +7,7 @@ This guide describes how you create a CI/CD pipeline that builds, tests and depl
 
 Enonic builds Docker images specifically made to be used in CI/CD pipelines. Those images can be used with different CI/CD providers to create pipelines. Each image contains the newest minor version of `Enonic XP 7`, the newest version of the `Enonic CLI` and some other essentials for build pipelines, including Yarn and essential Node tools. The image name format is `enonic/enonic-ci:<Major Version>.<Minor Version>`:
 
-* `enonic/enonic-ci:7.14`
-
-Prior to 7.14, we made two versions of the image, one with and one without the Node tools:
-
-* `enonic/enonic-ci:7.13-node`
-* `enonic/enonic-ci:7.13`
+* `enonic/enonic-ci:7.15`
 
 You can see a full list of https://hub.docker.com/r/enonic/enonic-ci/tags[available images on Docker Hub].
 
