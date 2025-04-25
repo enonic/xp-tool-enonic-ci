@@ -442,12 +442,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#cicd_images">CI/CD images</a></li>
-<li><a href="#env-var">Environmental variables</a></li>
+<li><a href="#env-var">Environment variables</a></li>
 <li><a href="#cicd_providers">CI/CD providers</a>
 <ul class="sectlevel2">
+<li><a href="#github_actions">GitHub Actions</a></li>
 <li><a href="#drone">Drone</a></li>
 <li><a href="#circle-ci">CircleCI</a></li>
-<li><a href="#github_actions">Github Actions</a></li>
 <li><a href="#travis_ci">Travis CI</a></li>
 <li><a href="#jenkins">Jenkins</a></li>
 </ul>
@@ -459,7 +459,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#faq">FAQ</a>
-<ul class="sectlevel3">
+<ul class="sectlevel2">
 <li><a href="#build_prompts_a_question_to_select_sandbox">Build prompts a question to select sandbox</a></li>
 </ul>
 </li>
@@ -493,7 +493,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="env-var"><a class="link" href="#env-var">Environmental variables</a></h2>
+<h2 id="env-var"><a class="link" href="#env-var">Environment variables</a></h2>
 <div class="sectionbody">
 <div class="admonitionblock note">
 <table>
@@ -510,7 +510,7 @@ These variables are only needed if you plan to deploy your XP app in your pipeli
 <div class="ulist">
 <ul>
 <li>
-<p><code>ENONIC_CLI_REMOTE_URL</code> is the address of the management port of the server you want to deploy to, i.e <code><a href="https://myserver.com:4848" class="bare">https://myserver.com:4848</a></code> or <code><a href="https://myserver.com:4443" class="bare">https://myserver.com:4443</a></code>.</p>
+<p><code>ENONIC_CLI_REMOTE_URL</code> is the address of the management port of the server you want to deploy to, i.e. <code><a href="https://myserver.com:4848" class="bare">https://myserver.com:4848</a></code> or <code><a href="https://myserver.com:4443" class="bare">https://myserver.com:4443</a></code>.</p>
 </li>
 <li>
 <p><code>ENONIC_CLI_REMOTE_USER</code> is the user used to deploy.</p>
@@ -521,7 +521,7 @@ These variables are only needed if you plan to deploy your XP app in your pipeli
 </ul>
 </div>
 <div class="paragraph">
-<p>You can define multiple servers and based on some conditions pick the right server to deploy to. For now we will keep it simple, but if you want to see how that is done see section: <a href="#complete-ci">Deploying with conditions</a>.</p>
+<p>You can define multiple servers and based on some conditions pick the right server to deploy to. For now, we will keep it simple, but if you want to see how that is done see section: <a href="#complete-ci">Deploying with conditions</a>.</p>
 </div>
 </div>
 </div>
@@ -530,6 +530,57 @@ These variables are only needed if you plan to deploy your XP app in your pipeli
 <div class="sectionbody">
 <div class="paragraph">
 <p>Depending on your CI/CD provider the pipeline configuration may vary. In this section we will show how to do minimal configuration so that every time you commit to your repository your app will be built, tested and deployed.</p>
+</div>
+<div class="sect2">
+<h3 id="github_actions"><a class="link" href="#github_actions">GitHub Actions</a></h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Setup GitHub Actions</strong> <a href="https://help.github.com/en/articles/getting-started-with-github-actions">for your project</a>.</p>
+</li>
+<li>
+<p><strong>Set required environmental variables</strong> for your project <a href="https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables">for GitHub Actions</a>.</p>
+</li>
+<li>
+<p><strong>Create pipeline file</strong> <code>.github/workflows/enonic.yml</code> in your repository:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">name: Enonic CI Server deploy script
+
+on: [&lt;triggering_event&gt;]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - id: build
+        uses: enonic/action-app-build@v1
+
+      - id: deploy
+        uses: enonic/action-app-deploy@v1
+        with:
+          url: ${{ secrets.XP_REMOTE_URL }}
+          cred_file: ${{ secrets.XP_CRED_FILE }}
+          client_cert: ${{ secrets.XP_CLIENT_CERT }}
+          client_key: ${{ secrets.XP_CLIENT_KEY }}</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Push file to repository</strong>:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">git add .github/workflows/enonic.yml
+git commit -m "Add Github Actions pipeline"
+git push</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><strong>Wait</strong> for GitHub Actions to build, test and deploy your app to your server.</p>
+</li>
+</ol>
+</div>
 </div>
 <div class="sect2">
 <h3 id="drone"><a class="link" href="#drone">Drone</a></h3>
@@ -632,58 +683,6 @@ git push</code></pre>
 </li>
 <li>
 <p><strong>Wait</strong> for CircleCI to build, test and deploy your app to your server.</p>
-</li>
-</ol>
-</div>
-</div>
-<div class="sect2">
-<h3 id="github_actions"><a class="link" href="#github_actions">Github Actions</a></h3>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><strong>Setup Github Actions</strong> <a href="https://help.github.com/en/articles/getting-started-with-github-actions">for your project</a>.</p>
-</li>
-<li>
-<p><strong>Set required environmental variables</strong> for your project <a href="https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables">for Github Actions</a>.</p>
-</li>
-<li>
-<p><strong>Create pipeline file</strong> <code>.github/workflows/enonic.yml</code> in your repository:</p>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-yaml" data-lang="yaml">name: Enonic CI Server deploy script
-
-on: [&lt;triggering_event&gt;]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - id: build
-        uses: enonic/release-tools/action-app-build@master
-      - id: deploy
-        uses: enonic/action-app-deploy@main
-        with:
-          url: ${{ secrets.ENONIC_CLI_REMOTE_URL }}
-          username: ${{ secrets.ENONIC_CLI_REMOTE_USER }}
-          password: ${{ secrets.ENONIC_CLI_REMOTE_PASS }}
-          client_cert: ${{ secrets.CLIENT_CERT }}
-          client_key: ${{ secrets.CLIENT_KEY }}
-          app_jar: "&lt;path and name of the app&gt;"</code></pre>
-</div>
-</div>
-</li>
-<li>
-<p><strong>Push file to repository</strong>:</p>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">git add .github/workflows/enonic.yml
-git commit -m "Add Github Actions pipeline"
-git push</code></pre>
-</div>
-</div>
-</li>
-<li>
-<p><strong>Wait</strong> for Github Actions to build, test and deploy your app to your server.</p>
 </li>
 </ol>
 </div>
@@ -1088,7 +1087,7 @@ steps:
 </ul>
 </div>
 <div class="paragraph">
-<p>Each of these contexts should have those 3 <a href="#env-var">Environmental variables</a> to configure deployment to their respective servers.</p>
+<p>Each of these contexts should have those 3 <a href="#env-var">Environment variables</a> to configure deployment to their respective servers.</p>
 </div>
 </div>
 <div class="sect3">
@@ -1201,8 +1200,8 @@ To approve production deployments you have to open up your CircleCI project work
 <div class="sect1">
 <h2 id="faq"><a class="link" href="#faq">FAQ</a></h2>
 <div class="sectionbody">
-<div class="sect3">
-<h4 id="build_prompts_a_question_to_select_sandbox"><a class="link" href="#build_prompts_a_question_to_select_sandbox">Build prompts a question to select sandbox</a></h4>
+<div class="sect2">
+<h3 id="build_prompts_a_question_to_select_sandbox"><a class="link" href="#build_prompts_a_question_to_select_sandbox">Build prompts a question to select sandbox</a></h3>
 <div class="paragraph">
 <p>This happens when the entrypoint is overwritten the CI image. To fix this issue run the command <code>/setup_sandbox.sh</code> before <code>enonic project build</code> in your pipeline. This is done in the examples for <a href="#drone">Drone</a>, <a href="#circle-ci">CircleCI</a> and <a href="#jenkins">Jenkins</a>.</p>
 </div>
@@ -1212,7 +1211,7 @@ To approve production deployments you have to open up your CircleCI project work
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-03-04 14:58:22 UTC
+Last updated 2025-04-25 12:54:08 UTC
 </div>
 </div>
 </body>
