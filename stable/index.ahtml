@@ -495,17 +495,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect1">
 <h2 id="env-var"><a class="link" href="#env-var">Environment variables</a></h2>
 <div class="sectionbody">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-These variables are only needed if you plan to deploy your XP app in your pipeline.
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>Some CI/CD providers require you to set environment variables in order to deploy your application.</p>
 </div>
 <div class="ulist">
 <ul>
@@ -521,6 +512,9 @@ These variables are only needed if you plan to deploy your XP app in your pipeli
 </ul>
 </div>
 <div class="paragraph">
+<p>All possible environment variables are listed in the <a href="https://developer.enonic.com/docs/enonic-cli/stable/xp#environment_variables">Enonic CLI documentation</a>.</p>
+</div>
+<div class="paragraph">
 <p>You can define multiple servers and based on some conditions pick the right server to deploy to. For now, we will keep it simple, but if you want to see how that is done see section: <a href="#complete-ci">Deploying with conditions</a>.</p>
 </div>
 </div>
@@ -529,7 +523,7 @@ These variables are only needed if you plan to deploy your XP app in your pipeli
 <h2 id="cicd_providers"><a class="link" href="#cicd_providers">CI/CD providers</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Depending on your CI/CD provider the pipeline configuration may vary. In this section we will show how to do minimal configuration so that every time you commit to your repository your app will be built, tested and deployed.</p>
+<p>Depending on your CI/CD provider, the pipeline configuration may vary. In this section we will show how to do minimal configuration so that every time you commit to your repository your app will be built, tested and deployed.</p>
 </div>
 <div class="sect2">
 <h3 id="github_actions"><a class="link" href="#github_actions">GitHub Actions</a></h3>
@@ -539,7 +533,26 @@ These variables are only needed if you plan to deploy your XP app in your pipeli
 <p><strong>Setup GitHub Actions</strong> <a href="https://help.github.com/en/articles/getting-started-with-github-actions">for your project</a>.</p>
 </li>
 <li>
-<p><strong>Set required environmental variables</strong> for your project <a href="https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables">for GitHub Actions</a>.</p>
+<p><strong>Setup Service Account Key</strong> <a href="https://developer.enonic.com/docs/xp/stable/iam/system-idp#service_account_key">for Enonic XP</a>.</p>
+</li>
+<li>
+<p><strong>Set required Secrets</strong> for your project <a href="https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables">for GitHub Actions</a>.</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>url</code> is the address of the management port.</p>
+</li>
+<li>
+<p><code>cred_file</code> is a content of Service Account Key file.</p>
+</li>
+<li>
+<p><code>client_cert</code> is a content of the client certificate file - if you are using mTLS.</p>
+</li>
+<li>
+<p><code>client_key</code> is a content of the client key file - if you are using mTLS.</p>
+</li>
+</ul>
+</div>
 </li>
 <li>
 <p><strong>Create pipeline file</strong> <code>.github/workflows/enonic.yml</code> in your repository:</p>
@@ -553,6 +566,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - id: build
+        uses: actions/checkout@v4
+
       - id: build
         uses: enonic/action-app-build@v1
 
@@ -1211,7 +1227,7 @@ To approve production deployments you have to open up your CircleCI project work
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-04-25 12:54:08 UTC
+Last updated 2025-05-15 14:55:37 UTC
 </div>
 </div>
 </body>
