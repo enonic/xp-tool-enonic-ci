@@ -14,24 +14,30 @@ You can see a full list of https://hub.docker.com/r/enonic/enonic-ci/tags[availa
 [#env-var]
 == Environment variables
 
-NOTE: These variables are only needed if you plan to deploy your XP app in your pipeline.
+Some CI/CD providers require you to set environment variables in order to deploy your application.
 
 * `ENONIC_CLI_REMOTE_URL` is the address of the management port of the server you want to deploy to, i.e. `https://myserver.com:4848` or `https://myserver.com:4443`.
 * `ENONIC_CLI_REMOTE_USER` is the user used to deploy.
 * `ENONIC_CLI_REMOTE_PASS` is the password of the respective user.
 
+All possible environment variables are listed in the https://developer.enonic.com/docs/enonic-cli/stable/xp#environment_variables[Enonic CLI documentation].
 
 You can define multiple servers and based on some conditions pick the right server to deploy to. For now, we will keep it simple, but if you want to see how that is done see section: <<complete-ci>>.
 
 == CI/CD providers
 
-Depending on your CI/CD provider the pipeline configuration may vary. In this section we will show how to do minimal configuration so that every time you commit to your repository your app will be built, tested and deployed.
-
+Depending on your CI/CD provider, the pipeline configuration may vary. In this section we will show how to do minimal configuration so that every time you commit to your repository your app will be built, tested and deployed.
 
 === GitHub Actions
 
 . *Setup GitHub Actions* https://help.github.com/en/articles/getting-started-with-github-actions[for your project].
-. *Set required environmental variables* for your project https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables[for GitHub Actions].
+. *Setup Service Account Key* https://developer.enonic.com/docs/xp/stable/iam/system-idp#service_account_key[for Enonic XP].
+. *Set required Secrets* for your project https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables[for GitHub Actions].
+    ** `url` is the address of the management port.
+    ** `cred_file` is a content of Service Account Key file.
+    ** `client_cert` is a content of the client certificate file - if you are using mTLS.
+    ** `client_key` is a content of the client key file - if you are using mTLS.
+
 . *Create pipeline file* `.github/workflows/enonic.yml` in your repository:
 +
 [source, yaml]
@@ -44,6 +50,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - id: build
+        uses: actions/checkout@v4
+
       - id: build
         uses: enonic/action-app-build@v1
 
