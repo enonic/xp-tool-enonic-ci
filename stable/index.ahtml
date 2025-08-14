@@ -658,10 +658,10 @@ git push</code></pre>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p><strong>Setup CircleCI</strong> <a href="https://circleci.com/docs/2.0/getting-started/">for your project</a>.</p>
+<p><strong>Setup CircleCI</strong> <a href="https://circleci.com/docs/guides/getting-started/getting-started/">for your project</a>.</p>
 </li>
 <li>
-<p><strong>Set required environmental variables</strong> for your project <a href="https://circleci.com/docs/2.0/env-vars/#setting-an-environment-variable-in-a-project">for CircleCI</a>.</p>
+<p><strong>Set required environmental variables</strong> for your project <a href="https://circleci.com/docs/guides/security/set-environment-variable/">for CircleCI</a>.</p>
 </li>
 <li>
 <p><strong>Create pipeline file</strong> <code>.circleci/config.yml</code> in your repository:</p>
@@ -1087,7 +1087,7 @@ steps:
 <div class="sect3">
 <h4 id="create_contexts"><a class="link" href="#create_contexts">Create contexts</a></h4>
 <div class="paragraph">
-<p>Before we create the workflow, we first need to <a href="https://circleci.com/docs/2.0/contexts/#creating-and-using-a-context">create 3 contexts in our organization</a>. We will call them:</p>
+<p>Before we create the workflow, we first need to <a href="https://circleci.com/docs/guides/security/contexts/#create-and-use-a-context">create 3 contexts in our organization</a>. We will call them:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1227,7 +1227,7 @@ To approve production deployments you have to open up your CircleCI project work
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-05-15 14:55:37 UTC
+Last updated 2025-08-14 12:09:33 UTC
 </div>
 </div>
 </body>
