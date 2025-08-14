@@ -122,8 +122,8 @@ git push
 [#circle-ci]
 === CircleCI
 
-. *Setup CircleCI* https://circleci.com/docs/2.0/getting-started/[for your project].
-. *Set required environmental variables* for your project https://circleci.com/docs/2.0/env-vars/#setting-an-environment-variable-in-a-project[for CircleCI].
+. *Setup CircleCI* https://circleci.com/docs/guides/getting-started/getting-started/[for your project].
+. *Set required environmental variables* for your project https://circleci.com/docs/guides/security/set-environment-variable/[for CircleCI].
 . *Create pipeline file* `.circleci/config.yml` in your repository:
 +
 [source, yaml]
@@ -421,7 +421,7 @@ To do this we are going to use CircleCI and their workflow API.
 
 ==== Create contexts
 
-Before we create the workflow, we first need to https://circleci.com/docs/2.0/contexts/#creating-and-using-a-context[create 3 contexts in our organization]. We will call them:
+Before we create the workflow, we first need to https://circleci.com/docs/guides/security/contexts/#create-and-use-a-context[create 3 contexts in our organization]. We will call them:
 
 * `testing-server`
 * `staging-server`
