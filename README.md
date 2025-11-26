@@ -18,8 +18,22 @@ These images contain the Enonic CLI, JDK and other build essentials to build you
 - `enonic/enonic-ci:7.16`
 - `enonic/enonic-ci:7.15`
 
-Because builds only use the JDK and the CLI it would be redunant to create images for every single release. Every feature version should do.
+Because builds only use the JDK and the CLI it would be redundant to create images for every single release. Every feature version should do.
 
 ## Building images
 
 Log into DockerHub with `docker login` and then run `./create_and_push_images.sh`.
+
+## Testing image
+
+In XP application directory run
+`docker run -v ${PWD}:/app -w /app enonic/enonic-ci:7.16 enonic project build`
+
+The result will be similar to the following:
+```
+Setting up builder sandbox ... 
+Setup success!
+
+Building in sandbox 'builder'...
+......
+``` 
