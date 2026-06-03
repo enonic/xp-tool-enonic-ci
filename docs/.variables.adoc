@@ -1,2 +1,2 @@
-:release: 7
-:version: 7.16
+:release: 8
+:version: 8.0
