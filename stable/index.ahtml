@@ -483,7 +483,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="ulist">
 <ul>
 <li>
-<p><code>enonic/enonic-ci:7.16</code></p>
+<p><code>enonic/enonic-ci:8.1</code></p>
 </li>
 </ul>
 </div>
@@ -1227,7 +1227,7 @@ To approve production deployments you have to open up your CircleCI project work
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-11-26 11:00:07 UTC
+Last updated 2026-10-21 12:04:29 UTC
 </div>
 </div>
 </body>
